@@ -146,7 +146,10 @@ pub fn tag<'t, A: Attributes, I: Html>(
     }
 }
 
-pub fn silent_tag<I: Html>(
+/// Add a node whose tags are not rendered.
+///
+/// TODO better docs, see https://react.dev/reference/react/Fragment
+pub fn fragment<I: Html>(
     inner_html: I,
 ) -> Tag<'static, Empty, I> {
     Tag {

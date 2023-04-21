@@ -1,7 +1,7 @@
 
 use criterion::{criterion_group, criterion_main, Criterion};
 use write_html::*;
-use std::fmt::Write;
+
 
 pub fn benchmark(c: &mut Criterion) {
     let mut page = String::new();

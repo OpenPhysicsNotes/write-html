@@ -59,7 +59,7 @@ pub fn html(item: TokenStream) -> TokenStream {
         tokens.push(TokenTree::Ident(Ident::new("tags", Span::call_site())));
         tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
         tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
-        tokens.push(TokenTree::Ident(Ident::new("silent_tag", Span::call_site())));
+        tokens.push(TokenTree::Ident(Ident::new("fragment", Span::call_site())));
         tokens.extend("(write_html::Empty)".parse::<TokenStream>().unwrap());
         tokens.extend(elements_to_with_token_stream(&elements).into_iter());
 

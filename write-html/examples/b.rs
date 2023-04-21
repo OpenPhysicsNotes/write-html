@@ -40,7 +40,7 @@ fn main() -> Result<(), Box<dyn Error>> {
     let mut page2 = MyWriter(&mut page);
 
     let begin = std::time::Instant::now();
-    for i in 0..1000000*1 {
+    for _i in 0..1000000*1 {
         page2.0.clear();
         page2.with(html!(
             (Doctype)

@@ -1,4 +1,4 @@
-use std::fmt::{Write, Arguments};
+use std::fmt::{Write};
 
 use crate::{HtmlEnv, Empty, Sum};
 
