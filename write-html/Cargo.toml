@@ -6,7 +6,7 @@ edition = "2021"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-write-html-macro = { path = "../write-html-macro" }
+write-html-macro = { version="0.1.0", path = "../write-html-macro" }
 
 [dev-dependencies]
 criterion = "0.4.0"
