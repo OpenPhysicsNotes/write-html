@@ -7,7 +7,7 @@ description = "A macro for writing HTML in Rust" # TODO update this
 homepage = "https://github.com/OpenPhysicsNotes/write-html"
 documentation = "https://docs.rs/write-html-macro"
 repository = "https://github.com/OpenPhysicsNotes/write-html"
-readme = "README.md"
+readme = "../README.md"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
