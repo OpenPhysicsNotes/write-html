@@ -9,7 +9,7 @@ use crate::{Attributes, Html, Compactability, Sum, AttributeName, AttributeValue
 ///
 /// TODO better docs
 #[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash)]
-pub struct Tag<'t, A: Attributes, I: Html, const SILENT: bool = false> { // TODO maybe with another type or an option
+pub struct Tag<'t, A: Attributes, I: Html, const SILENT: bool> { // TODO maybe with another type or an option
     tag: &'t str,
     attributes: A,
     inner_html: I,
@@ -38,7 +38,7 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Tag<'n, A, I, SILENT> {
     pub fn child<C: Html>(
         self,
         child: C,
-    ) -> Tag<'n, A, Sum<I, C>> {
+    ) -> Tag<'n, A, Sum<I, C>, SILENT> {
         Tag {
             tag: self.tag,
             attributes: self.attributes,
@@ -69,7 +69,7 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Tag<'n, A, I, SILENT> {
     pub fn attributes<B: Attributes>(
         self,
         attributes: B,
-    ) -> Tag<'n, Sum<A, B>, I> {
+    ) -> Tag<'n, Sum<A, B>, I, SILENT> {
         Tag {
             tag: self.tag,
             attributes: Sum(self.attributes, attributes),
@@ -83,7 +83,7 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Tag<'n, A, I, SILENT> {
         self,
         name: Name,
         value: Value,
-    ) -> Tag<'n, Sum<A, [(Name, Value); 1]>, I> {
+    ) -> Tag<'n, Sum<A, [(Name, Value); 1]>, I, SILENT> {
         Tag {
             tag: self.tag,
             attributes: Sum(self.attributes, [(name, value)]),
@@ -137,7 +137,7 @@ pub fn tag<'t, A: Attributes, I: Html>(
     attributes: A,
     inner_html: I,
     compactability: Compactability,
-) -> Tag<'t, A, I> {
+) -> Tag<'t, A, I, false> {
     Tag {
         tag,
         attributes,
@@ -151,7 +151,7 @@ pub fn tag<'t, A: Attributes, I: Html>(
 /// TODO better docs, see https://react.dev/reference/react/Fragment
 pub fn fragment<I: Html>(
     inner_html: I,
-) -> Tag<'static, Empty, I> {
+) -> Tag<'static, Empty, I, true> {
     Tag {
         tag: "",
         attributes: Empty,
@@ -171,7 +171,7 @@ $(#[$attr])*
 pub fn $tag(
     attributes: impl Attributes,
     inner_html: impl Html,
-) -> Tag<'static, impl Attributes, impl Html> {
+) -> Tag<'static, impl Attributes, impl Html, false> {
     tag(
         stringify!($tag),
         attributes,
