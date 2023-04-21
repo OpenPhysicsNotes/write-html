@@ -1,0 +1,159 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in library 'write-html'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--lib",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "write-html",
+                    "kind": "lib"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'a'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=a",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "a",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'a'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=a",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "a",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug example 'b'",
+            "cargo": {
+                "args": [
+                    "build",
+                    "--example=b",
+                    "--package=write-html",
+                    "--profile=release-with-debug"
+                ],
+                "filter": {
+                    "name": "b",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug unit tests in example 'b'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--example=b",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "b",
+                    "kind": "example"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug benchmark 'html_builder'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bench=html_builder",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "html_builder",
+                    "kind": "bench"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug benchmark 'write_html'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bench=write_html",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "write_html",
+                    "kind": "bench"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        },
+        {
+            "type": "lldb",
+            "request": "launch",
+            "name": "Debug benchmark 'write_html2'",
+            "cargo": {
+                "args": [
+                    "test",
+                    "--no-run",
+                    "--bench=write_html2",
+                    "--package=write-html"
+                ],
+                "filter": {
+                    "name": "write_html2",
+                    "kind": "bench"
+                }
+            },
+            "args": [],
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

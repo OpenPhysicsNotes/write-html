@@ -1,0 +1,16 @@
+
+
+[workspace]
+members = [
+    "write-html",
+    "write-html-macro",
+]
+
+default-members = [
+    "write-html",
+]
+
+# TODO remove
+[profile.release-with-debug]
+inherits = "release"
+debug = true
