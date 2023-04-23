@@ -10,34 +10,26 @@ use write_html::*;
 use std::fmt::Write;
 
 fn my_f() -> std::fmt::Result {
-    let mut page = String::new();
-    //page.reserve(1000);
-
-    page.doctype();
-    page.html_root("en")?
-        .with(tags::head(Empty, Empty)
-            .child(DefaultMeta)
-            .child(tags::title(Empty, "Website!".as_html()))
-        )?
-        .with(tags::body(Empty, Empty)
-            .child(tags::h1([("id", "h1")], "H1".as_html()))
-            .child(tags::h2(Empty, "H2".as_html()))
-            .child(tags::h3(Empty, "H3".as_html()))
-            .child(tags::p(Empty, "Paragraph".as_html()))
-            .child(tags::ol(
-                Empty,
-                [
-                    tags::li(Empty, "Item 1".as_html()),
-                    tags::li(Empty, "Item 2".as_html()),
-                ],
-            ))
-            .child(tags::ol(Empty, Empty)
-                .attr("style", "color: red")
-                .child(tags::li(Empty, "Item 1".as_html()))
-                .child(tags::li(Empty, "Item 2".as_html()))
-                .child(tags::li(Empty, "Item 3".as_html()))
-            )
-    )?;
+    let page = html!(
+        (Doctype)
+        html lang="en" {
+            head {
+                (DefaultMeta)
+                title { "Website!" }
+            }
+            body {
+                h1 #some-id { "H1" }
+                h2 { "H2" }
+                h3 { "H3" }
+                p { "Paragraph" }
+                ol {
+                    li { "Item 1" }
+                    li { "Item 2" }
+                    li style="color: red" { "Item 3" }
+                }
+            }
+        }
+    ).to_html_string()?;
 
     Ok(())
 }
@@ -85,10 +77,10 @@ pub trait HtmlEnv: Write + Sized {
     /// use write_html::{HtmlEnv, Html, AsHtml};
     /// 
     /// let mut s = String::new();
-    /// s.with("Hello, world!".as_html()).unwrap();
+    /// s.write_html("Hello, world!".as_html()).unwrap();
     /// assert_eq!(s, "Hello, world!");
     /// ```
-    fn with(&mut self, html: impl Html) -> Result<&mut Self, std::fmt::Error> {
+    fn write_html(&mut self, html: impl Html) -> Result<&mut Self, std::fmt::Error> {
         html.write_html(self)?;
         Ok(self)
     }
@@ -115,10 +107,10 @@ pub trait HtmlEnv: Write + Sized {
     /// use std::fmt::Write;
     /// 
     /// let mut s = String::new();
-    /// s.text().write_str("Hello, <world>").unwrap();
+    /// s.write_html_text().write_str("Hello, <world>").unwrap();
     /// assert_eq!(s, "Hello, &lt;world&gt;");
     /// ```
-    fn text<'s>(&'s mut self) -> HtmlEscaper<'s, Self> {
+    fn write_html_text<'s>(&'s mut self) -> HtmlEscaper<'s, Self> {
         HtmlEscaper::new(self)
     }
 
@@ -134,64 +126,18 @@ pub trait HtmlEnv: Write + Sized {
     /// use std::fmt::Write;
     /// 
     /// let mut s = String::new();
-    /// s.tag("h1", Compactability::No).unwrap()
+    /// s.open_tag("h1", Compactability::No).unwrap()
     ///     .with_attr("id", "my-id").unwrap()
     ///     .inner_html().unwrap()
     ///     .write_str("Hello, world!").unwrap();
     /// assert_eq!(s, "<h1 id=\"my-id\">Hello, world!</h1>");
     /// ```
-    fn tag<'s, 't>(
+    fn open_tag<'s, 't>(
         &'s mut self,
         tag: &'t str, // TODO non-static lifetime
         compactability: Compactability
     ) -> Result<TagOpening<'s, 't, Self>, std::fmt::Error> {
         TagOpening::<'s, 't, Self>::new(tag, self, compactability)
-    }
-
-    /// Adds a new root `<html>` node to the HTML document.
-    ///
-    /// See [`HtmlEnv::tag`] for more information.
-    fn html_root<'s>(
-        &'s mut self,
-        lang: &str
-    ) -> Result<InsideTagHtml<'s, 'static, Self>, std::fmt::Error> {
-        self.tag("html", Compactability::No)?
-            .with_attr("lang", lang)?
-            .inner_html()
-    }
-
-    /// Adds default `<meta>` tags to the HTML document.
-    ///
-    /// # Example
-    /// ```
-    /// use write_html::HtmlEnv;
-    /// 
-    /// let mut s = String::new();
-    /// s.html5_default_meta().unwrap();
-    /// assert_eq!(s, "<meta http-equiv=\"X-UA-Compatible\" content=\"ie=edge\"><meta charset=\"UTF-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\">");
-    fn html5_default_meta(&mut self) -> Result<&mut Self, std::fmt::Error> {
-        self
-            .with(tags::meta(
-                [
-                    ("http-equiv", "X-UA-Compatible"),
-                    ("content", "ie=edge")
-                ],
-                Empty,
-            ))?
-            .with(tags::meta(
-                //[("charset", "utf-8")],
-                [("charset", "UTF-8")],
-                Empty,
-            ))?
-            .with(tags::meta(
-                [
-                    ("name", "viewport"),
-                    ("content", "width=device-width, initial-scale=1.0")
-                ],
-                Empty,
-            ))?;
-
-        Ok(self)
     }
 }
 
@@ -201,7 +147,25 @@ impl<W: Write> HtmlEnv for W {}
 pub struct DefaultMeta;
 impl Html for DefaultMeta {
     fn write_html(self, env: &mut impl HtmlEnv) -> std::fmt::Result {
-        env.html5_default_meta().map(|_| ())
+        env
+            .write_html(tags::meta(
+                [
+                    ("http-equiv", "X-UA-Compatible"),
+                    ("content", "ie=edge")
+                ],
+                Empty,
+            ))?
+            .write_html(tags::meta(
+                [("charset", "UTF-8")],
+                Empty,
+            ))?
+            .write_html(tags::meta(
+                [
+                    ("name", "viewport"),
+                    ("content", "width=device-width, initial-scale=1.0")
+                ],
+                Empty,
+            )).map(|_| ())
     }
 }
 

@@ -27,7 +27,7 @@ fn sample_html() -> Result<String, Box<dyn std::error::Error>> {
                 }
             }
             for i in 0..2 {
-                env.with(tags::a(Empty, Empty)
+                env.write_html(tags::a(Empty, Empty)
                     .attr("href", Href(i))
                     .child(Href(i))
                 )?;
@@ -36,7 +36,7 @@ fn sample_html() -> Result<String, Box<dyn std::error::Error>> {
         }
     }
 
-    page.with(html!(
+    page.write_html(html!(
         (Doctype)
         html lang="en" {
             head {

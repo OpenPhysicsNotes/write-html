@@ -13,7 +13,7 @@ fn sample_html(page: &mut String) -> Result<(), Box<dyn std::error::Error>> {
     page.clear();
     //page.reserve(1000);
 
-    page.with(html!(
+    page.write_html(html!(
         (Doctype)
         html lang="en" {
             head {

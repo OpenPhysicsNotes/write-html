@@ -79,7 +79,7 @@ where
     S: AsRef<str>,
 {
     fn write_html(self, env: &mut impl HtmlEnv) -> std::fmt::Result {
-        env.text().write_str(self.0.as_ref())
+        env.write_html_text().write_str(self.0.as_ref())
     }
 }
 
@@ -116,5 +116,19 @@ impl AsHtml for String {
     }
     fn as_html_text(self) -> Self::HtmlText {
         HtmlTextStr(self)
+    }
+}
+
+/// Something that can be converted into an HTML string.
+pub trait ToHtmlString {
+    /// Converts `self` into an HTML string.
+    fn to_html_string(self) -> Result<String, std::fmt::Error>;
+}
+
+impl<H: Html> ToHtmlString for H {
+    fn to_html_string(self) -> Result<String, std::fmt::Error> {
+        let mut s = String::new();
+        self.write_html(&mut s)?;
+        Ok(s)
     }
 }

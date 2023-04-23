@@ -28,7 +28,7 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Tag<'n, A, I, SILENT> {
     /// use std::fmt::Write;
     ///
     /// let mut s = String::new();
-    /// s.with(tags::div(Empty, Empty)
+    /// s.write_html(tags::div(Empty, Empty)
     ///     .child(tags::p(Empty, Empty)
     ///         .child("Hello, world!".as_html())
     ///     )
@@ -58,7 +58,7 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Tag<'n, A, I, SILENT> {
     /// use std::fmt::Write;
     ///
     /// let mut s = String::new();
-    /// s.with(tags::div(Empty, Empty)
+    /// s.write_html(tags::div(Empty, Empty)
     ///     .attributes([
     ///         ("class", "container"),
     ///         ("id", "main"),
@@ -97,22 +97,22 @@ impl<'n, A: Attributes, I: Html, const SILENT: bool> Html for Tag<'n, A, I, SILE
     fn write_html(self, env: &mut impl crate::HtmlEnv) -> std::fmt::Result {
         if SILENT {
             if !self.inner_html.is_unit() {
-                env.with(self.inner_html).map(|_| ())
+                env.write_html(self.inner_html).map(|_| ())
             } else {
                 Ok(())
             }
         } else {
             if self.inner_html.is_unit() {
                 env
-                    .tag(self.tag, self.compactability)?
+                    .open_tag(self.tag, self.compactability)?
                     .with_attributes(self.attributes)
                     .map(|_| ())
             } else {
                 env
-                    .tag(self.tag, self.compactability)?
+                    .open_tag(self.tag, self.compactability)?
                     .with_attributes(self.attributes)?
                     .inner_html()?
-                    .with(self.inner_html)
+                    .write_html(self.inner_html)
                     .map(|_| ())
             }
         }
