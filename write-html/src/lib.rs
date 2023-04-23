@@ -7,35 +7,28 @@ This crate provides a way to write HTML with as little overhead as possible.
 # Example
 ```
 use write_html::*;
-use std::fmt::Write;
 
-fn my_f() -> std::fmt::Result {
-    let page = html!(
-        (Doctype)
-        html lang="en" {
-            head {
-                (DefaultMeta)
-                title { "Website!" }
-            }
-            body {
-                h1 #some-id { "H1" }
-                h2 { "H2" }
-                h3 { "H3" }
-                p { "Paragraph" }
-                ol {
-                    li { "Item 1" }
-                    li { "Item 2" }
-                    li style="color: red" { "Item 3" }
-                }
-                footer;
-            }
+let page = html!(
+    (Doctype)
+    html lang="en" {
+        head {
+            (DefaultMeta)
+            title { "Website!" }
         }
-    ).to_html_string()?;
-
-    Ok(())
-}
-
-my_f().unwrap();
+        body {
+            h1 #some-id { "H1" }
+            h2 { "H2" }
+            h3 { "H3" }
+            p { "Paragraph" }
+            ol {
+                li { "Item 1" }
+                li { "Item 2" }
+                li style="color: red" { "Item 3" }
+            }
+            footer;
+        }
+    }
+).to_html_string().unwrap();
 ```
 */
 
