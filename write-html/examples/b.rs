@@ -1,6 +1,6 @@
-use std::{error::Error, fmt::Write};
+use std::{error::Error};
 
-use write_html::{HtmlEnv, DefaultMeta, html, Doctype, ToHtmlString};
+use write_html::{DefaultMeta, html, Doctype, ToHtmlString};
 
 fn main() -> Result<(), Box<dyn Error>> {
     println!("Hello There!");
