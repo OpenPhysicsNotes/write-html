@@ -15,6 +15,8 @@ readme = "../README.md"
 proc-macro = true
 
 [dependencies]
+proc-macro2 = "1.0.56"
+quote = "1.0.26"
 
 [dev-dependencies]
 write-html = { path = "../write-html" }

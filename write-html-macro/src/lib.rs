@@ -1,6 +1,6 @@
 
 extern crate proc_macro;
-use proc_macro::{TokenStream, TokenTree, Ident, Delimiter, Group, Literal, Span};
+use proc_macro::{TokenStream, TokenTree, Ident, Delimiter, Group, Literal};
 
 /*#[proc_macro]
 pub fn make_answer(item: TokenStream) -> TokenStream {
@@ -51,32 +51,22 @@ pub fn html(item: TokenStream) -> TokenStream {
 
     fn elements_to_token_stream(elements: &[Element]) -> TokenStream {
 
-        let mut tokens = Vec::new();
+        let elements: proc_macro2::TokenStream = elements_to_with_token_stream(&elements).into();
 
-        tokens.push(TokenTree::Ident(Ident::new("write_html", Span::call_site())));
-        tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
-        tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
-        tokens.push(TokenTree::Ident(Ident::new("tags", Span::call_site())));
-        tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
-        tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
-        tokens.push(TokenTree::Ident(Ident::new("fragment", Span::call_site())));
-        tokens.extend("(write_html::Empty)".parse::<TokenStream>().unwrap());
-        tokens.extend(elements_to_with_token_stream(&elements).into_iter());
-
-        tokens.into_iter().collect()
+        quote::quote!(
+            ::write_html::tags::fragment(::write_html::Empty)
+                #elements
+        ).into()
     }
 
     fn elements_to_with_token_stream(elements: &[Element]) -> TokenStream {
         let mut tokens = Vec::new();
         for element in elements {
-            tokens.push(TokenTree::Punct(proc_macro::Punct::new('.', proc_macro::Spacing::Alone)));
-            tokens.push(TokenTree::Ident(Ident::new("child", Span::call_site())));
-            {
-                let mut args = Vec::new();
-                args.extend(element_to_token_stream(element).into_iter());
-                let group = Group::new(Delimiter::Parenthesis, args.into_iter().collect());
-                tokens.push(TokenTree::Group(group));
-            }
+            let element: proc_macro2::TokenStream = element_to_token_stream(element).into();
+            let new_tokens: TokenStream = quote::quote!(
+                .child(#element)
+            ).into();
+            tokens.extend(new_tokens.into_iter());
         }
 
         tokens.into_iter().collect()
@@ -87,21 +77,18 @@ pub fn html(item: TokenStream) -> TokenStream {
 
         match element {
             Element::Expression(group) => {
-                tokens.extend(group.clone().into_iter());
+                tokens.extend(group.clone());
             }
             Element::Literal(literal) => {
-                tokens.push(TokenTree::Ident(Ident::new("write_html", literal.span())));
-                tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
-                tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
-                tokens.push(TokenTree::Ident(Ident::new("HtmlTextStr", literal.span())));
-                {
-                    let mut args = Vec::new();
-                    args.push(TokenTree::Literal(literal.clone()));
-                    let group = Group::new(Delimiter::Parenthesis, args.into_iter().collect());
-                    tokens.push(TokenTree::Group(group));
-                }
+                let literal: proc_macro2::TokenStream = TokenStream::from(TokenTree::Literal(literal.clone())).into();
+                let new_tokens: TokenStream = quote::quote!(
+                    ::write_html::HtmlTextStr(#literal)
+                ).into();
+                tokens.extend(new_tokens);
             }
             Element::Tag(tag) => {
+                tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
+                tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
                 tokens.push(TokenTree::Ident(Ident::new("write_html", tag.identifier_span)));
                 tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Joint)));
                 tokens.push(TokenTree::Punct(proc_macro::Punct::new(':', proc_macro::Spacing::Alone)));
@@ -111,7 +98,7 @@ pub fn html(item: TokenStream) -> TokenStream {
                 if is_ident(&tag.identifier) {
                     tokens.push(TokenTree::Ident(Ident::new(&tag.identifier, tag.identifier_span)));
                     {
-                        let args = "(write_html::Empty, write_html::Empty)";
+                        let args = "(::write_html::Empty, ::write_html::Empty)";
                         let token_stream: TokenStream = args.parse().unwrap();
                         tokens.extend(token_stream.into_iter());
                     }
@@ -120,7 +107,7 @@ pub fn html(item: TokenStream) -> TokenStream {
                     {
                         let mut args = Vec::new();
                         args.push(TokenTree::Literal(Literal::string(&tag.identifier)));
-                        let token_stream: TokenStream = ", write_html::Empty, write_html::Empty, write_html::Compactability::Yes{final_slash: true}".parse().unwrap();
+                        let token_stream: TokenStream = ", ::write_html::Empty, ::write_html::Empty, ::write_html::Compactability::Yes{final_slash: true}".parse().unwrap();
                         args.extend(token_stream.into_iter());
                         let group = Group::new(Delimiter::Parenthesis, args.into_iter().collect());
                         tokens.push(TokenTree::Group(group));
