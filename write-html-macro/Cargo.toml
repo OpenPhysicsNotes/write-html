@@ -1,6 +1,6 @@
 [package]
 name = "write-html-macro"
-version = "0.1.0"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 description = "A macro for writing HTML in Rust" # TODO update this

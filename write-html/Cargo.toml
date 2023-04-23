@@ -1,6 +1,6 @@
 [package]
 name = "write-html"
-version = "0.1.1"
+version = "0.1.2"
 edition = "2021"
 license = "MIT"
 description = "A crate for writing HTML in Rust" # TODO update this
@@ -13,7 +13,7 @@ readme = "../README.md"
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
-write-html-macro = { version="0.1.0", path = "../write-html-macro" }
+write-html-macro = { version="0.1.2", path = "../write-html-macro" }
 
 [dev-dependencies]
 criterion = "0.4.0"
