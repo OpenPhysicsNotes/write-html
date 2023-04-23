@@ -173,8 +173,8 @@ enum Element {
 }
 
 #[derive(Debug, Clone)]
-struct ParsedElement {
-    element: Element,
+struct Parsed<T> {
+    parsed: T,
     next: usize,
 }
 
@@ -188,28 +188,28 @@ fn parse_mutliple_elements(tokens: &[TokenTree]) -> Option<Vec<Element>> {
         }
 
         let element = parse_element(&tokens[idx..])?;
-        elements.push(element.element);
+        elements.push(element.parsed);
         idx += element.next;
     }
 
     Some(elements)
 }
 
-fn parse_element(tokens: &[TokenTree]) -> Option<ParsedElement> {
+fn parse_element(tokens: &[TokenTree]) -> Option<Parsed<Element>> {
 
     let first = tokens.first()?;
 
     match first {
         TokenTree::Ident(_ident) => {
             let tag = parse_tag_element(tokens)?;
-            Some(ParsedElement {
-                element: Element::Tag(tag.tag),
+            Some(Parsed {
+                parsed: Element::Tag(tag.tag),
                 next: tag.next,
             })
         }
         TokenTree::Literal(literal) => {
-            Some(ParsedElement {
-                element: Element::Literal(literal.clone()),
+            Some(Parsed {
+                parsed: Element::Literal(literal.clone()),
                 next: 1,
             })
         }
@@ -219,8 +219,8 @@ fn parse_element(tokens: &[TokenTree]) -> Option<ParsedElement> {
         TokenTree::Group(group) => {
             match group.delimiter() {
                 Delimiter::Parenthesis => {
-                    Some(ParsedElement {
-                        element: Element::Expression(group.stream()),
+                    Some(Parsed {
+                        parsed: Element::Expression(group.stream()),
                         next: 1,
                     })
                 }
@@ -264,21 +264,16 @@ fn parse_tag_element(tokens: &[TokenTree]) -> Option<ParsedTag> {
             break;
         }
 
-        let token = &tokens[idx];
-        if let TokenTree::Group(group) = token {
-            if group.delimiter() == Delimiter::Brace {
-                let delimited = group.stream().into_iter().collect::<Vec<TokenTree>>();
-                let children = parse_mutliple_elements(&delimited)?;
-                return Some(ParsedTag {
-                    tag: Tag {
-                        identifier,
-                        identifier_span: tokens[0].span(), // TODO this is not correct
-                        attributes,
-                        children: children,
-                    },
-                    next: idx + 1,
-                });
-            }
+        if let Some(inner) = parse_tag_inner(tokens, idx) {
+            return Some(ParsedTag {
+                tag: Tag {
+                    identifier,
+                    identifier_span: tokens[0].span(), // TODO this is not correct
+                    attributes,
+                    children: inner.parsed,
+                },
+                next: inner.next,
+            })
         }
 
         if let Some((attribute, next2)) = parse_attribute(&tokens[idx..]) {
@@ -290,6 +285,39 @@ fn parse_tag_element(tokens: &[TokenTree]) -> Option<ParsedTag> {
     }
 
     None
+}
+
+fn parse_tag_inner(tokens: &[TokenTree], start: usize) -> Option<Parsed<Vec<Element>>> {
+    if tokens.len() <= start {
+        return None;
+    }
+    let token = &tokens[start];
+
+    match token {
+        TokenTree::Group(group) => {
+            if group.delimiter() == Delimiter::Brace {
+                let delimited = group.stream().into_iter().collect::<Vec<TokenTree>>();
+                let children = parse_mutliple_elements(&delimited)?;
+                return Some(Parsed {
+                    parsed: children,
+                    next: start + 1,
+                });
+            } else {
+                None
+            }
+        }
+        TokenTree::Punct(punct) => {
+            if punct.as_char() == ';' {
+                return Some(Parsed {
+                    parsed: Vec::new(),
+                    next: start + 1,
+                });
+            } else {
+                None
+            }
+        }
+        _ => None,
+    }
 }
 
 #[derive(Debug, Clone)]

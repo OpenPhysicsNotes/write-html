@@ -22,6 +22,7 @@ fn main() -> Result<(), Box<dyn Error>> {
                     li { "Item 2" }
                     li style="color: red" { "Item 3" }
                 }
+                footer;
             }
         }
     ).to_html_string()?;

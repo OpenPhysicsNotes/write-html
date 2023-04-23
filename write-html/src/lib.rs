@@ -27,6 +27,7 @@ fn my_f() -> std::fmt::Result {
                     li { "Item 2" }
                     li style="color: red" { "Item 3" }
                 }
+                footer;
             }
         }
     ).to_html_string()?;
