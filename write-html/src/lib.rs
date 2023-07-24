@@ -133,6 +133,12 @@ pub trait HtmlEnv: Write + Sized {
     ) -> Result<TagOpening<'s, 't, Self>, std::fmt::Error> {
         TagOpening::<'s, 't, Self>::new(tag, self, compactability)
     }
+
+    fn with_html_writer(self, f: impl FnOnce(&mut Self) -> std::fmt::Result) -> Result<Self, std::fmt::Error> {
+        let mut s = self;
+        f(&mut s)?;
+        Ok(s)
+    }
 }
 
 impl<W: Write> HtmlEnv for W {}

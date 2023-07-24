@@ -43,7 +43,16 @@ impl<A: Html, B: Html> Html for Sum<A, B> {
     }
 }
 
-impl<I: IntoIterator> Html for I
+/*impl Html for () {
+    fn is_unit(&self) -> bool {
+        true
+    }
+    fn write_html(self, _env: &mut impl HtmlEnv) -> std::fmt::Result {
+        Ok(())
+    }
+}*/
+
+impl<I: Iterator> Html for I
 where
     I::Item: Html,
 {
@@ -54,6 +63,18 @@ where
         Ok(())
     }
 }
+
+//impl<I: IntoIterator> Html for I
+//where
+//    I::Item: Html,
+//{
+//    fn write_html(self, env: &mut impl HtmlEnv) -> std::fmt::Result {
+//        for h in self {
+//            h.write_html(env)?;
+//        }
+//        Ok(())
+//    }
+//}
 
 /// Html string
 ///
