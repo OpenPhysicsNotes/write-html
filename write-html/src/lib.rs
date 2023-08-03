@@ -32,7 +32,7 @@ let page = html!(
 ```
 */
 
-#![warn(missing_docs)]
+//#![warn(missing_docs)]
 
 use std::fmt::Write;
 
