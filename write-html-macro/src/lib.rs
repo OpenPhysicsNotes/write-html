@@ -107,7 +107,7 @@ pub fn html(item: TokenStream) -> TokenStream {
                     {
                         let mut args = Vec::new();
                         args.push(TokenTree::Literal(Literal::string(&tag.identifier)));
-                        let token_stream: TokenStream = ", ::write_html::Empty, ::write_html::Empty, ::write_html::Compactability::Yes{final_slash: true}".parse().unwrap();
+                        let token_stream: TokenStream = ", ::write_html::Empty, ::write_html::Empty, ::write_html::Compactability::No".parse().unwrap();
                         args.extend(token_stream.into_iter());
                         let group = Group::new(Delimiter::Parenthesis, args.into_iter().collect());
                         tokens.push(TokenTree::Group(group));
@@ -401,6 +401,15 @@ fn parse_html_identifier(tokens: &[TokenTree]) -> Option<(String, usize)> {
     }
 
     let mut prev_type = None;
+
+    //let mut span: Option<proc_macro::Span> = None;
+    //let push_span = |s: proc_macro::Span| {
+    //    if let Some(span) = span {
+    //        span = span.join(s).unwrap();
+    //    } else {
+    //        span = Some(s);
+    //    }
+    //};
 
     // iterate over the tokens until we find a non-ident or non "-" token
     for token in tokens {
